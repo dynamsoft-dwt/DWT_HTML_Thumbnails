@@ -1,8 +1,8 @@
-# DWT_HTML_ScanAndEdit
+# DWT_HTML_Thumbnails
 This sample demonstrates how to use two DWT objects to simulate the Thumbnail view.
 ####
 Dynamsoft Team
-2015-11-16
+2016-03-14
 
 #### See it in Action
 You can check out how it works on this <a target="_blank" href="http://www.dynamsoft.com/Samples/DWT/DWT_HTML_Thumbnails/DWT_HTML_Thumbnails/Thumbnail.html">demo page</a>.
@@ -15,7 +15,7 @@ In order to test the sample on your own, you need to download the complete code 
 
 ####Reference
 * Core Software used: [Dynamic Web TWAIN](https://www.dynamsoft.com/CustomerPortal/LoginOrRegister.aspx?status=signup&op=4DD608F3803493E4&product=CB4BDC4FF903450C)
-* APIs used in the sample: [Dynamic Web TWAIN APIs] (www.dynamsoft.com/help/TWAIN/WebTwain/index.htm).
+* APIs used in the sample: [Dynamic Web TWAIN APIs] (http://developer.dynamsoft.com/).
 
 Should you need any technical help, please write to 
 support@dynamsoft.com.
