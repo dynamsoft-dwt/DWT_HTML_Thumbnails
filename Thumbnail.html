@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>Use Dynamic Web TWAIN to Scan With Thumbnails View</title>
-    <script type="text/javascript" src="Resources/dynamsoft.webtwain.config.js"></script>
-    <script type="text/javascript" src="Resources/dynamsoft.webtwain.initiate.js"></script>
+	<script type="text/javascript" src="https://www.dynamsoft.com/Demo/DWT/Resources/dynamsoft.webtwain.initiate.js?t=150418"> </script>
+    <script type="text/javascript" src="https://www.dynamsoft.com/Demo/DWT/Resources/dynamsoft.webtwain.config.js"> </script>
 	<link rel="stylesheet" href="Style/ds.demo.css">
 </head>
 <body>
@@ -77,11 +77,23 @@
 
         function Dynamsoft_OnReady() {
             DWObject = Dynamsoft.WebTwainEnv.GetWebTwain('dwtcontrolContainer'); // Get the Dynamic Web TWAIN object that is embeded in the div with id 'dwtcontrolContainer'
-            if (DWObject) {
-                DWObjectLargeViewer = Dynamsoft.WebTwainEnv.GetWebTwain('dwtcontrolContainerLargeViewer'); // Get the 2nd Dynamic Web TWAIN object that is embeded in the div with id 'dwtcontrolContainerLargeViewer'
-
-                DWObjectLargeViewer.SetViewMode(-1, -1); // When the view mode is set to -1 by -1, the control only shows the current image. No scroll bar is provided to navigate to other images.
-                DWObjectLargeViewer.MaxImagesInBuffer = 1; // Set it to hold one image only
+            if (DWObject) {			
+				DWObject.Width = 182;
+				DWObject.Height = 600;
+				Dynamsoft.WebTwainEnv.CreateDWTObject("dwtcontrolContainerLargeViewer",
+					function(dwtObject){
+						DWObjectLargeViewer = dwtObject;
+						if(DWObjectLargeViewer){
+							DWObjectLargeViewer.Width = 760;
+							DWObjectLargeViewer.Height = 600;
+							DWObjectLargeViewer.SetViewMode(-1, -1); // When the view mode is set to -1 by -1, the control only shows the current image. No scroll bar is provided to navigate to other images.
+							DWObjectLargeViewer.MaxImagesInBuffer = 1; // Set it to hold one image only                
+						}
+					},
+					function(errorString){
+						console.log(errorString);
+					}
+				);                
                 DWObject.SetViewMode(1, 4); // Set the view mode to 1 by 3. In this view mode, when the number of the images in the buffer is larger than 4 (1 x 4), a scroll bar is provide to navigate to other images.
                 
                 var count = DWObject.SourceCount; // Get how many sources are installed in the system
