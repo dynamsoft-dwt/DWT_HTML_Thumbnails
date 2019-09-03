@@ -1,8 +1,8 @@
 # DWT_HTML_Thumbnails
-This sample demonstrates how to use two DWT objects to simulate the Thumbnails view.
+This sample demonstrates how to use two DWT instances to simulate the Thumbnails view.
 ####
 Dynamsoft Team
-2019-08-21
+2019-09-03
 
 ####Reference
 * Core Software used: [Dynamic Web TWAIN](https://www.dynamsoft.com/Downloads/FAWEFIIEFEIJSG_WebTWAIN.aspx)

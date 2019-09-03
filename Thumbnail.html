@@ -4,71 +4,83 @@
 <head>
     <title>Use Dynamic Web TWAIN to Scan With Thumbnails View</title>
     <script src="https://unpkg.com/dwt/dist/dynamsoft.webtwain.min.js"> </script>
-    <link rel="stylesheet" href="Style/ds.demo.css">
 </head>
 
 <body>
-    <div id="main">
-        <div class="container">
-            <div class="section p15">
+    <div style="padding: 50px 0; height: auto;">
+        <div style="width: 980px; margin: 0 auto;">
+            <div style="width:90%;padding: 15px;">
                 <select style="width:40%; height:34px;" id="source">
-                    <option value="" disabled selected>Select A Device</option>
+                    <option disabled selected>Select A Device</option>
                 </select>
-                <input type="button" style="width:25%;" class="btn bgBlue mb20 ml4p" value="Scan"
-                    onclick="AcquireImage();" />
-                <input type="button" style="width:25%;" class="btn bgBlue mb20 ml4p" value="Load"
-                    onclick="LoadImage();" />
+                <input type="button" style="width:25%;height:34px;" value="Scan" onclick="AcquireImage();" />
+                <input type="button" style="width:25%;height:34px;" value="Load" onclick="LoadImage();" />
             </div>
-            <div style="display: block; position: absolute;">
-                <div id="dwtcontrolContainer" style="float: left; position:relative; margin-right:20px;"></div>
-                <div id="dwtcontrolContainerLargeViewer" style="float: left; position:relative;"></div>
+            <div style="width:90%;">
+                <div id="dwtcontrolContainer" style="float: left; position:relative; margin-right:3%;width:20%"></div>
+                <div id="dwtcontrolContainerLargeViewer" style="float: left; position:relative;width:75%"></div>
             </div>
         </div>
     </div>
     <script type="text/javascript">
         window.onload = function () {
-            Dynamsoft.WebTwainEnv.Load();
+            if (Dynamsoft && (!Dynamsoft.Lib.env.bWin || !Dynamsoft.Lib.product.bChromeEdition)) {
+                var ObjString = [];
+                ObjString.push('<div style="padding:0 20px;">');
+                ObjString.push(
+                    "This demo page doesn't support your current browser. Try a modern browsers like Chrome, Firefox, etc. Or contact Dynamsoft Support for more information."
+                );
+                ObjString.push('</div>');
+                Dynamsoft.WebTwainEnv.ShowDialog(400, 180, ObjString.join(''));
+                if (document.getElementsByClassName("dynamsoft-dialog-close"))
+                    document.getElementsByClassName("dynamsoft-dialog-close")[0].style.display = "none";
+            } else {
+                Dynamsoft.WebTwainEnv.AutoLoad = false;
+                Dynamsoft.WebTwainEnv.Containers = [{ ContainerId: 'dwtcontrolContainer', Width: '100%', Height: '500px' }];
+                Dynamsoft.WebTwainEnv.RegisterEvent('OnWebTwainReady', function () { Dynamsoft_OnReady(); });
+                /**
+                 * In order to use the full version, do the following
+                 * 1. Change Dynamsoft.WebTwainEnv.Trial to false
+                 * 2. Replace A-Valid-Product-Key with a full version key
+                 * 3. Change Dynamsoft.WebTwainEnv.ResourcesPath to point to the full version 
+                 *    resource files that you obtain after purchasing a key
+                 */
+                Dynamsoft.WebTwainEnv.Trial = true;
+                //Dynamsoft.WebTwainEnv.ProductKey = "A-Valid-Product-Key";
+                //Dynamsoft.WebTwainEnv.ResourcesPath = "https://tst.dynamsoft.com/libs/dwt/15.0";
+
+                Dynamsoft.WebTwainEnv.Load();
+            }
         };
-
-        Dynamsoft.WebTwainEnv.RegisterEvent('OnWebTwainReady',
-            Dynamsoft_OnReady
-        ); // Register OnWebTwainReady event. This event fires as soon as Dynamic Web TWAIN is initialized and ready to be used
-
         var DWObject;
 
         function Dynamsoft_OnReady() {
-            DWObject = Dynamsoft.WebTwainEnv.GetWebTwain(
-                'dwtcontrolContainer'
-            ); // Get the Dynamic Web TWAIN object that is embeded in the div with id 'dwtcontrolContainer'
+            // Get the Dynamic Web TWAIN object that is embeded in the div with id 'dwtcontrolContainer'
+            DWObject = Dynamsoft.WebTwainEnv.GetWebTwain('dwtcontrolContainer');
             if (DWObject) {
-                DWObject.Width = 182;
-                DWObject.Height = 600;
                 Dynamsoft.WebTwainEnv.CreateDWTObject("dwtcontrolContainerLargeViewer",
                     function (dwtObject) {
                         DWObjectLargeViewer = dwtObject;
                         if (DWObjectLargeViewer) {
-                            DWObjectLargeViewer.Width = 760;
-                            DWObjectLargeViewer.Height = 600;
-                            DWObjectLargeViewer.SetViewMode(-1, -
-                                1
-                            ); // When the view mode is set to -1 by -1, the control only shows the current image. No scroll bar is provided to navigate to other images.
-                            DWObjectLargeViewer.MaxImagesInBuffer =
-                                1; // Set it to hold one image only                
+                            DWObjectLargeViewer.Width = "100%";
+                            DWObjectLargeViewer.Height = 500;
+                            // Set the view to hold one image only
+                            DWObjectLargeViewer.SetViewMode(-1, -1);
+                            // Set it to hold one image only
+                            DWObjectLargeViewer.MaxImagesInBuffer = 1;
                         }
                     },
                     function (errorString) {
                         console.log(errorString);
                     }
                 );
-                DWObject.SetViewMode(1,
-                    4
-                ); // Set the view mode to 1 by 3. In this view mode, when the number of the images in the buffer is larger than 4 (1 x 4), a scroll bar is provide to navigate to other images.
+                // Set the view to show four images
+                DWObject.SetViewMode(1, 4);
 
-                var count = DWObject.SourceCount; // Get how many sources are installed in the system
+                // Add the sources in a drop-down list
+                var count = DWObject.SourceCount;
                 for (var i = 0; i < count; i++)
-                    document.getElementById("source").options.add(new Option(DWObject.GetSourceNameItems(i),
-                        i)); // Add the sources in a drop-down list
-
+                    document.getElementById("source").options.add(new Option(DWObject.GetSourceNameItems(i), i));
                 // Register the events
                 DWObject.RegisterEvent("OnPostTransfer", Dynamsoft_OnPostTransfer);
                 DWObject.RegisterEvent("OnPostLoad", Dynamsoft_OnPostLoad);
@@ -80,13 +92,12 @@
             if (DWObject) {
                 DWObject.SelectSourceByIndex(document.getElementById("source").selectedIndex - 1);
                 DWObject.OpenSource();
-                DWObject.IfDisableSourceAfterAcquire =
-                    true; // Scanner source will be disabled/closed automatically after the scan.
+                DWObject.IfDisableSourceAfterAcquire = true;
                 DWObject.AcquireImage();
             }
         }
 
-        //Callback functions for async APIs
+        // Callback functions for async APIs
         function OnSuccess() {
             console.log('successful');
         }
@@ -97,31 +108,29 @@
 
         function LoadImage() {
             if (DWObject) {
-                DWObject.IfShowFileDialog = true; // Open the system's file dialog to load image
-                DWObject.LoadImageEx("", EnumDWT_ImageType.IT_ALL, OnSuccess,
-                    OnFailure
-                ); // Load images in all supported formats (.bmp, .jpg, .tif, .png, .pdf). OnSuccess or OnFailure will be called after the operation
+                // Open the system's file dialog to load image
+                DWObject.IfShowFileDialog = true;
+                // Load images in all supported formats (.bmp, .jpg, .tif, .png, .pdf).
+                DWObject.LoadImageEx("", EnumDWT_ImageType.IT_ALL, OnSuccess, OnFailure);
             }
         }
 
-        function Dynamsoft_OnPostTransfer() { // The event OnPostTransfer will get fired after a transfer ends.
+        function Dynamsoft_OnPostTransfer() {
             updateLargeViewer();
         }
 
-        function Dynamsoft_OnPostLoad(path, name,
-            type
-        ) { // The event OnPostLoad will get fired after the images from a local directory have been loaded into the control.
+        function Dynamsoft_OnPostLoad(path, name, type) {
             updateLargeViewer();
         }
 
-        function Dynamsoft_OnMouseClick() { // The event OnMouseClick will get fired when the mouse clicks on an image.
+        function Dynamsoft_OnMouseClick() {
             updateLargeViewer();
         }
 
         function updateLargeViewer() {
-            DWObject.CopyToClipboard(DWObject
-                .CurrentImageIndexInBuffer); // Copy the current image in the thumbnail to clipboard in DIB format.
-            DWObjectLargeViewer.LoadDibFromClipboard(); // Load the image from Clipboard into the large viewer.
+            DWObject.CopyToClipboard(DWObject.CurrentImageIndexInBuffer);
+            // Load the image from Clipboard into the large viewer.
+            DWObjectLargeViewer.LoadDibFromClipboard();
         }
     </script>
 </body>
